@@ -1,6 +1,6 @@
 # vxel
 a WIP vorxel engine
 ## build
-`g++ -I./include ./src/main.cpp -lGL -lGLU -lGLEW -lglfw -o ./bin/main`
+`g++ -I./include -I./vxel file.name -lGL -lGLU -lGLEW -lglfw -o ./bin/file.name.out`
 ## run
-`cd ./bin && ./main`
+`cd ./bin && ./file.name.out`
