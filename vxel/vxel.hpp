@@ -11,8 +11,12 @@
 #include <map>
 #include <vector>
 
+const uint MAX_TEXTURE_NUMBER = 32;
+
 class vxel {
 private:
+    std::vector<const char*> texture_path;
+
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
         if(action == GLFW_PRESS)
             keyhold[key] = true;
@@ -25,8 +29,7 @@ public:
 
     GLFWwindow* window;
     uint VBO, VAO;
-    uint* textures;
-    uint texture_num = 1;
+    uint textures[MAX_TEXTURE_NUMBER];
     Shader shader;
     Camera camera;
     float deltaTime = 0;
@@ -48,11 +51,9 @@ public:
 
         glEnable(GL_DEPTH_TEST);
     }
-    void setTextureNumber(uint num) {
-        texture_num = num;
-        uint p[num];
-        delete textures;
-        textures = p;
+    uint addTexture(const char* path) {
+        texture_path.push_back(path);
+        return texture_path.size() - 1;
     }
     void loadShader() {
         shader.loadFromFile("./shaders/vertex.glsl",
@@ -73,10 +74,14 @@ public:
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        glGenTextures(texture_num-1, textures);
+        uint texture_num = texture_path.size();
+        if(texture_num > 0) {
+            glGenTextures(texture_num - 1, textures);
 
-        loadImageTexture(*textures, "./textures/avt.png");
-        loadImageTexture(*(textures + 1), "./textures/dcm.png");
+            for(int i = 0; i < texture_num; i++)
+                loadImageTexture(*(textures + i), texture_path[i]);
+                texture_path.clear();
+        }
 
         shader.use();
         shader.setInt("tex", 0);
@@ -96,14 +101,8 @@ public:
             glBindVertexArray(VAO);
             for(Voxel vox: voxels) {
                 glActiveTexture(GL_TEXTURE0);
-                switch(vox.getType()) {
-                    case VOXEL_AVT:
-                        glBindTexture(GL_TEXTURE_2D, *textures);
-                        break;
-                    case VOXEL_MISC:
-                        glBindTexture(GL_TEXTURE_2D, *(textures + 1));
-                        break;
-                }
+                glBindTexture(GL_TEXTURE_2D, *(textures + vox.getTexture()));
+
                 shader.setMat4("model", vox.getModel());
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }

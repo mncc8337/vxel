@@ -1,4 +1,4 @@
-#include "vxel/vxel.hpp"
+#include <vxel/vxel.hpp>
 #include <iostream>
 
 vxel engine(800, 800, "test");
@@ -33,18 +33,21 @@ void func() {
     engine.camera.applyNewRotation();
 }
 
+// make sure to load textures before loading shader
+const uint AVT = engine.addTexture("./textures/avt.png");
+const uint IDK = engine.addTexture("./textures/dcm.png");
+
 int main(void) {
-    engine.setTextureNumber(2);
     engine.loadShader();
 
-    engine.camera.position = glm::vec3(0.0f, 0.0f, 50.0f);
+    engine.camera.position = glm::vec3(0.0f, 0.0f, 100.0f);
 
-    int volume = 10;
+    int volume = 50;
     for(int i = 0; i < volume; i++)
         for(int j = 0; j < volume; j++)
             for(int k = 0; k < volume; k++)
                 engine.voxels.push_back(Voxel(glm::vec3(i, j, k),
-                (i % 2 == 0 && j % 2 == 0 && k % 2 == 0) ? VOXEL_AVT : VOXEL_MISC));
+                (i % 2 == 0 && j % 2 == 0 && k % 2 == 0) ? AVT : IDK));
 
     engine.start(func);
 
