@@ -1,5 +1,5 @@
 # vxel
-a WIP vortex engine
+a WIP vorxel engine
 ## build
 `g++ -I./include ./src/main.cpp -lGL -lGLU -lGLEW -lglfw -o ./bin/main`
 ## run
